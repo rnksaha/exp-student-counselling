@@ -1,0 +1,17 @@
+{
+    "studentId": "3490804030",
+    "collegeChoices": [
+        {
+            "collegeId": "WFA5444650",
+            "department": "IT"
+        },
+        {
+            "collegeId": "WAP2031731",
+            "department": "CSE"
+        },
+        {
+            "collegeId": "PFB3759161",
+            "department": "ECE"
+        }
+    ]
+}

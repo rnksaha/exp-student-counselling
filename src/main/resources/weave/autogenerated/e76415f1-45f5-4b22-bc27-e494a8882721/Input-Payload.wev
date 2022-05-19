@@ -1,0 +1,25 @@
+%dw 2.0
+
+type auto_e76415f1_45f5_4b22_bc27_e494a8882721_Input_Payload = {
+  studentId: String, 
+  collegeChoices: {
+    third: {
+      collegeId: String, 
+      department: "CE" | "CSE" | "ECE" | "ME" | "IT", 
+      _?: Any
+    }, 
+    first: {
+      collegeId: String, 
+      department: "CE" | "CSE" | "ECE" | "ME" | "IT", 
+      _?: Any
+    }, 
+    second: {
+      collegeId: String, 
+      department: "CE" | "CSE" | "ECE" | "ME" | "IT", 
+      _?: Any
+    }, 
+    _?: Any
+  }, 
+  _?: Any
+} {"description": "Enrolment request by student"}
+

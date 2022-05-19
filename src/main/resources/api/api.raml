@@ -1,0 +1,56 @@
+#%RAML 1.0
+title: XAPI Student Counselling
+
+uses:
+  commons: /exchange_modules/26105a91-12e5-4470-b3a0-40b228e3e2a0/sc_commonslib/0.0.6/sc_commonslib.raml
+
+types:
+  student_request: commons.student_request
+  
+/enroll: 
+  is:
+    - commons.client_id_required
+    - commons.rate_limiting
+  post:
+    description: Method to request for enrolment
+    body:
+      application/json:
+        type: student_request
+        example: !include /examples/StudentRequest.json
+    responses:
+      200:
+        body:
+          application/json:
+            example: !include /examples/EnrolmentSuccess.json
+      
+      409:
+        description: Enrolment already exists
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Student already enrolled"}
+
+      412:
+        description: Enrolment failed for non matching conditions
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "No available seats or criteria for requested colleges too high"} 
+
+      500:
+        description: Internal enrolment error
+        body:
+          application/json:
+            type: commons.error_response
+            example: {"error_message": "Student enrolment failed, please try again later"}
+
+/ping:
+  get:
+    description: Healthcheck endpoint
+    responses:
+      200:
+        description: Service online
+        body:
+            application/json:
+              example:  {"Service health" : "Service is up and running"}
+       

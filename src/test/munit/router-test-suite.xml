@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="router-test-suite.xml" />
+	<munit:test name="api-mainTest" doc:id="5ddb6f48-8a51-4426-a07d-a8742168ab88" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="api:config" doc:id="0f09984a-1a18-48b1-a78d-61ba674786ce" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to api-main" doc:id="8142085c-f788-49db-a74f-b6cd23c6fa08" name="api-main"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="get:\ping" doc:id="658395bb-ca41-4689-bfd0-c08d5f49a165" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="get:\ping" doc:id="a9e44b25-688d-49fa-8e9a-2b89eb4cde78" name="get:\ping:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9a790b2d-1d3a-4812-90e2-42adebbd2e3f" is="#[MunitTools::notNullValue()]" message="Not upto the mark" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="APIKIT:BAD_REQUEST" doc:id="8cb75817-ac02-4944-9e97-92699a289917" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="api:config-bad-request" doc:id="94646944-0a89-4d72-97d6-431f8531273a" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vPayload" doc:id="57ce73d2-f5ed-4dbb-ab48-7e847a775651">
+				<munit:variables>
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/testData.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to api-main" doc:id="9ce9d971-7b47-480b-aadd-7fa8265266c1" name="api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="dab9f545-c87c-42ff-9f82-c1731a00c0ec" message="Not upto the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="HTTP:CONNECTIVITY" doc:id="8d6862be-9223-4e72-af9d-0658bae1b505" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="api:config" doc:id="de85a098-c113-40c4-886b-62681ba60556" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vPayload" doc:id="0436a342-1bdc-4ccd-b2ac-6fedf2cc073e">
+				<munit:variables>
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/testData.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to api-main" doc:id="87748ab1-fcdf-4e64-836b-8b5e6de08fd6" name="api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="585fce13-f3d6-472e-af10-4965cf3eb254" message="Not upto the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="VALIDATION:NOT_NULL" doc:id="b56d555c-fe8d-4ee9-b991-1cf0d7feb8f0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="api:config-validation" doc:id="2714aa9d-43c7-4403-be17-c9fc1ec2250d" processor="apikit:router" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="api-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="VALIDATION:NOT_NULL" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vPayload" doc:id="b5e8224f-4ab2-4bef-9302-ae60b186c34d">
+				<munit:variables>
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/testData.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to api-main" doc:id="df5cf5cb-5077-41f1-a45a-bec55d2238d3" name="api-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="9924834e-90c8-4aa9-abfa-4235e03307fb" message="Not upto the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="post:\enroll" doc:id="1f862557-75af-4b86-90c2-836c9cd7e8a3" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="request:enroller" doc:id="748ede39-f6d4-4726-9040-dc9888e0166e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="enroller" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vPayload" doc:id="fac93abe-f5cd-4474-89a7-1621add86ed6" >
+				<munit:variables >
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/testData.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\enroll" doc:id="1334054f-6555-4661-94c3-16a004e8f5c4" name="post:\enroll:application\json:api-config"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="api-configTest-error" doc:id="af08e49e-41ba-43ec-a43d-d83bcc6da303" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="enroller" doc:id="e9a90be0-1f77-439b-ab3e-3c5d2564c259" processor="http:request" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="enroller" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APP:ENROLMENT_FAILURE" />
+				</munit-tools:then-return>
+			
+</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="vPayload" doc:id="1c0bc5cf-d738-402d-9880-e4cc91463626" >
+				<munit:variables >
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/testData.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+
+
+			</munit:set-event>
+			<flow-ref doc:name="post:\enroll" doc:id="67781e7b-bd96-45c1-a6e5-b8103dd9a0de" name="post:\enroll:application\json:api-config" />
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
