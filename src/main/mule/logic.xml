@@ -6,7 +6,7 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<sub-flow name="logicSub_Flow" doc:id="e76415f1-45f5-4b22-bc27-e494a8882721" >
+	<sub-flow name="enrollment_logicSub_Flow" doc:id="e76415f1-45f5-4b22-bc27-e494a8882721" >
 		<logger level="INFO" doc:name="flowStartLogger" doc:id="9365cdaa-96bf-4c17-9a64-5bed58592c00" />
 		<try doc:name="Try" doc:id="703020dc-6399-4146-943b-aef7bb0d78c0" >
 			<http:request method="POST" doc:name="enroller" doc:id="03298cee-640a-40f9-9e5b-2233ceebeb21" config-ref="HTTP_Request_configuration" path="/enroller">
@@ -47,5 +47,11 @@ payload]]></ee:set-payload>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="endLogger" doc:id="f62f7c98-dca7-4e69-be08-e7d4ef926c6c" />
+	</sub-flow>
+	<sub-flow name="payment_logicSub_Flow" doc:id="9950b157-8d77-425f-869f-3d8ed91dbff8" >
+		<logger level="INFO" doc:name="Logger" doc:id="c945a6ee-e99b-43a6-9e91-27945a67a88a" message="#[error]"/>
+	</sub-flow>
+	<sub-flow name="library_logicSub_Flow" doc:id="956dab87-f0d5-462f-88c0-68a622433d7c" >
+		<logger level="INFO" doc:name="Logger" doc:id="9e08baa0-134e-44db-bba4-cddb90217010" message="#[error]"/>
 	</sub-flow>
 </mule>

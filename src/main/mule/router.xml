@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -10,13 +10,20 @@
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
             </http:error-response>
         </http:listener>
-        <set-variable value="#[payload]" doc:name="vPayload" doc:id="d40c496c-e6a4-4a03-9ccf-a20405d9812d" variableName="vPayload"/>
-		<apikit:router config-ref="api-config" />
+        <set-variable value="#[payload]" doc:name="vPayload" doc:id="d40c496c-e6a4-4a03-9ccf-a20405d9812d" variableName="vPayload" />
+        <apikit:router config-ref="api-config" />
+		<error-handler ref="globalError_Handler" />
     </flow>
     <flow name="post:\enroll:application\json:api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="827212ab-8653-42ef-add4-837497acea5b" name="logicSub_Flow"/>
+        <flow-ref doc:name="Flow Reference" doc:id="827212ab-8653-42ef-add4-837497acea5b" name="enrollment_logicSub_Flow" />
     </flow>
-	<flow name="get:\ping:api-config">
-		<flow-ref doc:name="Flow Reference" doc:id="efbfac31-1063-474b-bdfc-0fe0a2d36eaf" name="healthCheckSub_Flow"/>
+    <flow name="get:\ping:api-config">
+        <flow-ref doc:name="Flow Reference" doc:id="efbfac31-1063-474b-bdfc-0fe0a2d36eaf" name="healthCheckSub_Flow" />
+    </flow>
+    <flow name="post:\library_registration:application\json:api-config">
+        <flow-ref doc:name="library_registration_flow_reference" doc:id="96957db2-8454-4ccf-8897-b55f6f159541" name="library_logicSub_Flow"/>
+    </flow>
+    <flow name="post:\payment:application\json:api-config">
+        <flow-ref doc:name="payment_flow_reference" doc:id="dd820240-2dd2-489c-9a3a-be4575b48436" name="payment_logicSub_Flow"/>
     </flow>
 </mule>
