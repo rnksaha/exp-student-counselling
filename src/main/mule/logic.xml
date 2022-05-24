@@ -50,8 +50,61 @@ payload]]></ee:set-payload>
 	</sub-flow>
 	<sub-flow name="payment_logicSub_Flow" doc:id="9950b157-8d77-425f-869f-3d8ed91dbff8" >
 		<logger level="INFO" doc:name="Logger" doc:id="c945a6ee-e99b-43a6-9e91-27945a67a88a" message="#[error]"/>
+		<try doc:name="Try" doc:id="8269ca22-d480-4ee1-acaf-9d7fd1b18fdc" >
+			<http:request method="GET" doc:name="Request" doc:id="a65ad8b1-db46-4153-8441-b0867c89b936" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="66165d81-06ab-45b5-802c-483257506233" >
+					<set-variable value="#[error]" doc:name="Error" doc:id="a0e9532a-6277-4abd-898d-fd646199c101" variableName="Error"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="69f4bc5a-69d3-4703-8f6d-1abffc0ed795" >
+			<validation:is-null doc:name="Is null" doc:id="79376f3d-b62a-4562-8f77-ec64113746fa" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6916b128-9a54-4dd7-86c7-3852c4eda46e" type="VALIDATION:NOT_NULL">
+					<raise-error doc:name="APP:PAYMENT_FAILURE" doc:id="472b482a-afdc-4b75-9b1f-d0b007417f57" type="APP:PAYMENT_FAILURE"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="75b242a4-f96b-4705-ab28-35dd0ae7a837" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 	<sub-flow name="library_logicSub_Flow" doc:id="956dab87-f0d5-462f-88c0-68a622433d7c" >
 		<logger level="INFO" doc:name="Logger" doc:id="9e08baa0-134e-44db-bba4-cddb90217010" message="#[error]"/>
+		<try doc:name="Try" doc:id="a778608c-b2d0-422a-b484-ba5bac8042f4" >
+			<http:request method="GET" doc:name="Request" doc:id="21b564e7-2a83-4e64-8ccd-60fa6d56a607" />
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20896ec4-8d95-44e2-84ea-bbf45e314842" >
+					<set-variable value="#[error]" doc:name="Error" doc:id="f1f4eb72-4b8b-40a4-b611-52e143634937" variableName="Error"/>
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<try doc:name="Try" doc:id="98d26d6a-281b-446f-96b5-0de4b264a569" >
+			<validation:is-null doc:name="Is null" doc:id="839ae0ab-eb0a-4bba-9cdb-19b18d9d6c03" />
+			<error-handler >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="88a346a8-592e-480c-8e53-f99054a1c0fe" type="VALIDATION:NOT_NULL">
+					<ee:transform doc:name="Transform Message" doc:id="ee11a397-87f9-456d-9ea4-d181406f33e4" >
+						<ee:message >
+							<ee:set-payload ><![CDATA[vars.Error.errorMessage.attributes.statusCode]]></ee:set-payload>
+						</ee:message>
+					</ee:transform>
+					<raise-error doc:name="Raise error" doc:id="7bea1902-a57b-4242-9cac-a2167b630f77" type="APP:LIBRARY_REGISTRATION_FAILURE"/>
+				</on-error-propagate>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="a1e40aab-14da-4d57-b032-3752d0ec4576" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</sub-flow>
 </mule>
