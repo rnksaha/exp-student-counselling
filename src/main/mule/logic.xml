@@ -126,4 +126,40 @@ payload]]></ee:set-payload>
 		</ee:transform>
 		<logger level="INFO" doc:name="flowEndLogger" doc:id="a0216b96-4f03-4e5d-b1fd-e68077f765e7" message='"Library Flow Ended"'/>
 	</sub-flow>
+	<sub-flow name="pingSub_Flow" doc:id="cb666447-4023-4dd1-bb00-d56860aa6e95" >
+		<try doc:name="Try" doc:id="a12c988d-8a43-4bfa-9a8f-7b7f1ca7f6e8" >
+			<http:request method="GET" doc:name="Request" doc:id="a9077417-b044-4823-acea-42a05311cb6b" config-ref="HTTP_Request_configuration" path="/ping" target="vPing" >
+				<http:headers ><![CDATA[#[{
+	"client_id": attributes.headers.client_id,
+	"client_secret": attributes.headers.client_secret,
+	"x-dependent-ping" : true
+}]]]></http:headers>
+			</http:request>
+			<error-handler >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fc6444c9-451e-41d3-8dd8-35273fc0927a" >
+					<set-payload value="PING IS NOT WORKING" doc:name="Set Payload" doc:id="c2fef20b-3181-49ce-a8bd-02457a025cc7" />
+				</on-error-continue>
+			</error-handler>
+		</try>
+		<ee:transform doc:name="Transform Message" doc:id="80cce538-24f7-48f9-8b7e-a5e19c1bb5a3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+
+{
+  "dependentApiResponse": [vars.vPing],
+  	
+  module: "${ping.module}",
+  projectVersion: "${ping.projectVersion}",
+  apiVersion: "${ping.apiVersion}",
+  env: "${ping.env}",
+  status: "${ping.status}",
+  message: "${ping.message}"
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</sub-flow>
 </mule>
