@@ -14,10 +14,13 @@ sapi:
 
 papi:
   protocol: "HTTP"
-  host: "papi-student-counselling.us-e2.cloudhub.io"
+  #host: "papi-student-counselling.us-e2.cloudhub.io"
+  host: "prc-student-counselling.us-e2.cloudhub.io"
   port: "80"
   endpoints:
     enroller: "/enroller"
+    admissionprocess: "/admissionprocess"
+    libregistration: "/libregistration"
  
 mongo:
   username: "MuleIntern2022"
