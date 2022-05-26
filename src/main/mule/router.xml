@@ -11,7 +11,17 @@
             </http:error-response>
         </http:listener>
         <set-variable value="#[payload]" doc:name="vPayload" doc:id="d40c496c-e6a4-4a03-9ccf-a20405d9812d" variableName="vPayload" />
-        <apikit:router config-ref="api-config" />
+        <ee:transform doc:name="set CorrelationId" doc:id="c71e4fd3-884d-4b02-a447-ca0afb75fced" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vCorrelationId" ><![CDATA[%dw 2.0
+output application/java
+---
+if ( ! isEmpty(attributes.headers."correlationId") ) attributes.headers."correlationId" else uuid()]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<apikit:router config-ref="api-config" />
 		<error-handler ref="globalError_Handler" />
     </flow>
     <flow name="post:\enroll:application\json:api-config">
