@@ -3,11 +3,14 @@
     <flow name="api-main">
         <http:listener config-ref="api-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret'),
+	"x-dependent-ping": Mule::p('ping.x-dependent-ping')}]]]></http:headers>
             </http:response>
             <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+                <http:body><![CDATA[#[payload]]]></http:body>
+                <http:headers><![CDATA[#[vars.outboundHeaders default {}]]]></http:headers>
             </http:error-response>
         </http:listener>
         <set-variable value="#[payload]" doc:name="vPayload" doc:id="d40c496c-e6a4-4a03-9ccf-a20405d9812d" variableName="vPayload" />
