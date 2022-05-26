@@ -11,8 +11,9 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 		<try doc:name="Try" doc:id="703020dc-6399-4146-943b-aef7bb0d78c0" >
 			<http:request method="POST" doc:name="enroller" doc:id="03298cee-640a-40f9-9e5b-2233ceebeb21" config-ref="HTTP_Request_configuration" path="/enroller">
 				<http:headers ><![CDATA[#[{
-	"client_id": attributes.headers.client_id,
-	"client_secret": attributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
@@ -53,8 +54,9 @@ payload]]></ee:set-payload>
 		<try doc:name="Try" doc:id="8269ca22-d480-4ee1-acaf-9d7fd1b18fdc" >
 			<http:request method="POST" doc:name="AdmissionProcess" doc:id="a65ad8b1-db46-4153-8441-b0867c89b936" config-ref="HTTP_Request_configuration" path="${papi.endpoints.admissionprocess}">
 				<http:headers ><![CDATA[#[{
-	"client_id": attributes.headers.client_id,
-	"client_secret": attributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
@@ -93,8 +95,9 @@ payload]]></ee:set-payload>
 		<try doc:name="Try" doc:id="a778608c-b2d0-422a-b484-ba5bac8042f4" >
 			<http:request method="POST" doc:name="libraryProcess" doc:id="21b564e7-2a83-4e64-8ccd-60fa6d56a607" config-ref="HTTP_Request_configuration" path="${papi.endpoints.libregistration}">
 				<http:headers ><![CDATA[#[{
-	"client_id": attributes.headers.client_id,
-	"client_secret": attributes.headers.client_secret
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret')
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
@@ -130,9 +133,10 @@ payload]]></ee:set-payload>
 		<try doc:name="Try" doc:id="a12c988d-8a43-4bfa-9a8f-7b7f1ca7f6e8" >
 			<http:request method="GET" doc:name="Request" doc:id="a9077417-b044-4823-acea-42a05311cb6b" config-ref="HTTP_Request_configuration" path="/ping" target="vPing" >
 				<http:headers ><![CDATA[#[{
-	"client_id": attributes.headers.client_id,
-	"client_secret": attributes.headers.client_secret,
-	"x-dependent-ping" : true
+	"correlationId": vars.vCorrelationId,
+	"client_id": Mule::p('secure::property.client_id'),
+	"client_secret":Mule::p('secure::property.client_secret'),
+	"x-dependent-ping": Mule::p('ping.x-dependent-ping')
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
