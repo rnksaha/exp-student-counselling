@@ -51,7 +51,7 @@ output application/json
 					</ee:message>
 				</ee:transform>
 			</on-error-propagate>
-		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="40ef09c7-23f4-4622-8f71-1d270b763e9f" type="APP:ENROLMENT_FAILURE" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="40ef09c7-23f4-4622-8f71-1d270b763e9f" type="APP:PROCESS_FAILURE" >
 			<ee:transform doc:name="Transform Message" doc:id="d9443601-65f1-458d-9235-926934b91ff3" >
 				<ee:message >
 					<ee:set-payload ><![CDATA[%dw 2.0

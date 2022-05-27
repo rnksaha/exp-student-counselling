@@ -6,10 +6,32 @@
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
 http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd">
-	<sub-flow name="enrollment_logicSub_Flow" doc:id="e76415f1-45f5-4b22-bc27-e494a8882721" >
+	<sub-flow name="eCounselling_LogicSub_Flow" doc:id="e76415f1-45f5-4b22-bc27-e494a8882721" >
 		<logger level="INFO" doc:name="flowStartLogger" doc:id="9365cdaa-96bf-4c17-9a64-5bed58592c00" />
+		<ee:transform doc:name="vDynamicPath" doc:id="32d976cc-d89d-4c60-badf-9b2b59a2c9cf" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="vDynamicPath" ><![CDATA[%dw 2.0
+output application/json
+var index = if ( vars.vAttributes.maskedRequestPath == "/enroll" ) {
+	papiPath: p('papi.endpoints.enroller')
+}
+else if ( vars.vAttributes.maskedRequestPath == "/payment" ) {
+	papiPath: p('papi.endpoints.admissionprocess')
+}
+else if ( vars.vAttributes.maskedRequestPath == "/library_registration" ) {
+	papiPath: p('papi.endpoints.libregistration')
+}
+else null
+---
+{
+	path: index.papiPath
+}]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
 		<try doc:name="Try" doc:id="703020dc-6399-4146-943b-aef7bb0d78c0" >
-			<http:request method="POST" doc:name="enroller" doc:id="03298cee-640a-40f9-9e5b-2233ceebeb21" config-ref="HTTP_Request_configuration" path="/enroller">
+			<http:request method="POST" doc:name="AIO Requester" doc:id="03298cee-640a-40f9-9e5b-2233ceebeb21" config-ref="HTTP_Request_configuration" path="#[vars.vDynamicPath.path]">
 				<http:headers ><![CDATA[#[{
 	"correlationId": vars.vCorrelationId,
 	"client_id": Mule::p('secure::property.client_id'),
@@ -17,23 +39,16 @@ http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mu
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1981a45e-2347-4fcf-8c9d-5d54d4fc7444" type="ANY">
-					<set-variable value="#[error]" doc:name="Error" doc:id="d916b8f8-cc73-466d-a735-573946b83280" variableName="Error"/>
-				</on-error-continue>
-			</error-handler>
-		</try>
-		<try doc:name="Try" doc:id="8f04a4a2-9d9a-4d92-9c5b-5ccc10fdc8bb" >
-			<validation:is-null doc:name="var Error is null?" doc:id="b1a641aa-73d2-430a-991d-c31831ac1c95" value="#[vars.Error]"/>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f57fa859-370e-4078-9316-35056b6b1b82" type="VALIDATION:NOT_NULL">
-					<ee:transform doc:name="httpStatus" doc:id="a7aa58d5-fee1-4deb-b7e3-69b2452d059c" >
-						<ee:message >
+				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a7ac1956-371a-41f1-83a7-48a6709d1c64" type="ANY">
+					<set-variable value="#[error]" doc:name="Set Variable" doc:id="895e2a56-ff26-4075-9191-6ec34c979ad9" variableName="Error"/>
+					<ee:transform doc:name="httpStatus" doc:id="a7aa58d5-fee1-4deb-b7e3-69b2452d059c">
+						<ee:message>
 						</ee:message>
-						<ee:variables >
-							<ee:set-variable variableName="httpStatus" ><![CDATA[vars.Error.errorMessage.attributes.statusCode]]></ee:set-variable>
+						<ee:variables>
+							<ee:set-variable variableName="httpStatus"><![CDATA[vars.Error.errorMessage.attributes.statusCode]]></ee:set-variable>
 						</ee:variables>
 					</ee:transform>
-					<raise-error doc:name="APP:ENROLMENT_FAILURE" doc:id="2326eef8-67ba-495a-8042-214903818934" type="APP:ENROLMENT_FAILURE" description="#[vars.Error.errorMessage.payload.error_message]"/>
+					<raise-error doc:name="APP:PROCESS_FAILURE" doc:id="2326eef8-67ba-495a-8042-214903818934" type="APP:PROCESS_FAILURE" description="#[vars.Error.errorMessage.payload.error_message]" />
 				</on-error-propagate>
 			</error-handler>
 		</try>
@@ -48,86 +63,6 @@ payload]]></ee:set-payload>
 			</ee:variables>
 		</ee:transform>
 		<logger level="INFO" doc:name="endLogger" doc:id="f62f7c98-dca7-4e69-be08-e7d4ef926c6c" />
-	</sub-flow>
-	<sub-flow name="payment_logicSub_Flow" doc:id="9950b157-8d77-425f-869f-3d8ed91dbff8" >
-		<logger level="INFO" doc:name="flowStartLogger" doc:id="c945a6ee-e99b-43a6-9e91-27945a67a88a" message='"Payment Flow started"'/>
-		<try doc:name="Try" doc:id="8269ca22-d480-4ee1-acaf-9d7fd1b18fdc" >
-			<http:request method="POST" doc:name="AdmissionProcess" doc:id="a65ad8b1-db46-4153-8441-b0867c89b936" config-ref="HTTP_Request_configuration" path="${papi.endpoints.admissionprocess}">
-				<http:headers ><![CDATA[#[{
-	"correlationId": vars.vCorrelationId,
-	"client_id": Mule::p('secure::property.client_id'),
-	"client_secret":Mule::p('secure::property.client_secret')
-}]]]></http:headers>
-			</http:request>
-			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="66165d81-06ab-45b5-802c-483257506233" type="ANY">
-					<set-variable value="#[error]" doc:name="Error" doc:id="a0e9532a-6277-4abd-898d-fd646199c101" variableName="Error"/>
-				</on-error-continue>
-			</error-handler>
-		</try>
-		<try doc:name="Try" doc:id="69f4bc5a-69d3-4703-8f6d-1abffc0ed795" >
-			<validation:is-null doc:name="var Error is null ?" doc:id="79376f3d-b62a-4562-8f77-ec64113746fa" value="#[vars.Error]"/>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6916b128-9a54-4dd7-86c7-3852c4eda46e" type="VALIDATION:NOT_NULL">
-					<ee:transform doc:name="Transform Message" doc:id="79a32e56-8671-4337-99c5-4738e6c9c221" >
-						<ee:message >
-						</ee:message>
-						<ee:variables >
-							<ee:set-variable variableName="httpStatus" ><![CDATA[vars.Error.errorMessage.attributes.statusCode]]></ee:set-variable>
-						</ee:variables>
-					</ee:transform>
-					<raise-error doc:name="APP:PAYMENT_FAILURE" doc:id="472b482a-afdc-4b75-9b1f-d0b007417f57" type="APP:PAYMENT_FAILURE" description="#[vars.Error.errorMessage.payload.error_message]"/>
-				</on-error-propagate>
-			</error-handler>
-		</try>
-		<ee:transform doc:name="Transform Message" doc:id="75b242a4-f96b-4705-ab28-35dd0ae7a837" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="flowEndLogger" doc:id="c5d7d3ec-08d1-4820-95a6-6b7acead91df" message='"Payment Flow ended"'/>
-	</sub-flow>
-	<sub-flow name="library_logicSub_Flow" doc:id="956dab87-f0d5-462f-88c0-68a622433d7c" >
-		<logger level="INFO" doc:name="flowStartLogger" doc:id="9e08baa0-134e-44db-bba4-cddb90217010" message='"Library Flow Started"'/>
-		<try doc:name="Try" doc:id="a778608c-b2d0-422a-b484-ba5bac8042f4" >
-			<http:request method="POST" doc:name="libraryProcess" doc:id="21b564e7-2a83-4e64-8ccd-60fa6d56a607" config-ref="HTTP_Request_configuration" path="${papi.endpoints.libregistration}">
-				<http:headers ><![CDATA[#[{
-	"correlationId": vars.vCorrelationId,
-	"client_id": Mule::p('secure::property.client_id'),
-	"client_secret":Mule::p('secure::property.client_secret')
-}]]]></http:headers>
-			</http:request>
-			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="20896ec4-8d95-44e2-84ea-bbf45e314842" >
-					<set-variable value="#[error]" doc:name="Error" doc:id="f1f4eb72-4b8b-40a4-b611-52e143634937" variableName="Error"/>
-				</on-error-continue>
-			</error-handler>
-		</try>
-		<try doc:name="Try" doc:id="98d26d6a-281b-446f-96b5-0de4b264a569" >
-			<validation:is-null doc:name="var Error is null ?" doc:id="839ae0ab-eb0a-4bba-9cdb-19b18d9d6c03" value="#[vars.Error]"/>
-			<error-handler >
-				<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="88a346a8-592e-480c-8e53-f99054a1c0fe" type="VALIDATION:NOT_NULL">
-					<ee:transform doc:name="Transform Message" doc:id="ee11a397-87f9-456d-9ea4-d181406f33e4" >
-						<ee:message >
-							<ee:set-payload ><![CDATA[vars.Error.errorMessage.attributes.statusCode]]></ee:set-payload>
-						</ee:message>
-					</ee:transform>
-					<raise-error doc:name="APP:LIBRARY_REGISTRATION_FAILURE" doc:id="7bea1902-a57b-4242-9cac-a2167b630f77" type="APP:LIBRARY_REGISTRATION_FAILURE" description="#[vars.Error.errorMessage.payload.error_message]"/>
-				</on-error-propagate>
-			</error-handler>
-		</try>
-		<ee:transform doc:name="Transform Message" doc:id="a1e40aab-14da-4d57-b032-3752d0ec4576" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
----
-payload]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="flowEndLogger" doc:id="a0216b96-4f03-4e5d-b1fd-e68077f765e7" message='"Library Flow Ended"'/>
 	</sub-flow>
 	<sub-flow name="pingSub_Flow" doc:id="cb666447-4023-4dd1-bb00-d56860aa6e95" >
 		<try doc:name="Try" doc:id="a12c988d-8a43-4bfa-9a8f-7b7f1ca7f6e8" >
