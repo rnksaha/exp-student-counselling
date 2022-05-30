@@ -8,6 +8,39 @@
 		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
 		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
 	<munit:config name="router-test-suite.xml" />
+	<munit:test name="routerTestGetPing" doc:id="1956527d-0b60-4424-a931-09b2f33bd4eb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0dbf1f60-aa11-42ee-9ccd-47526dcead3d" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ping-request" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="getPing" doc:id="0cc244b9-274e-4dad-a160-60bb40be50b5" name="get:\ping:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="b9c51f6a-270b-403e-bdf1-7b30bdac7411" message="Not Up to the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="routerTestGetPingError" doc:id="d5f7d277-6f53-4fcb-9d2b-6010730cffa4" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="fda6f9ce-2283-430a-970e-10eabaf61adf" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="ping-request" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APP:PING_NOT_WORKING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="getPing" doc:id="cef19cf7-2c84-45cc-89d0-6381151d6fa7" name="get:\ping:api-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ab8d045d-68e4-4972-81f9-9677809bbe90" message="Not Up to the mark" is="#[MunitTools::notNullValue()]" expression="#[payload]" />
+		</munit:validation>
+	</munit:test>
 	<munit:test name="api-mainTest" doc:id="5ddb6f48-8a51-4426-a07d-a8742168ab88" description="Test">
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="api:config" doc:id="0f09984a-1a18-48b1-a78d-61ba674786ce" processor="apikit:router">
@@ -20,7 +53,7 @@
 			<flow-ref doc:name="Flow-ref to api-main" doc:id="8142085c-f788-49db-a74f-b6cd23c6fa08" name="api-main"/>
 		</munit:execution>
 	</munit:test>
-	<munit:test name="get:\ping" doc:id="658395bb-ca41-4689-bfd0-c08d5f49a165" description="Test">
+	<munit:test name="get:\ping" doc:id="658395bb-ca41-4689-bfd0-c08d5f49a165" description="Test" ignore="true">
 		<munit:execution >
 			<flow-ref doc:name="get:\ping" doc:id="a9e44b25-688d-49fa-8e9a-2b89eb4cde78" name="get:\ping:api-config"/>
 		</munit:execution>
@@ -101,7 +134,7 @@
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="request:enroller" doc:id="748ede39-f6d4-4726-9040-dc9888e0166e" processor="http:request">
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="enroller" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
 				</munit-tools:with-attributes>
 			</munit-tools:mock-when>
 		</munit:behavior>
@@ -118,7 +151,7 @@
 		<munit:behavior >
 			<munit-tools:mock-when doc:name="enroller" doc:id="e9a90be0-1f77-439b-ab3e-3c5d2564c259" processor="http:request" >
 				<munit-tools:with-attributes >
-					<munit-tools:with-attribute whereValue="enroller" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
 				</munit-tools:with-attributes>
 				<munit-tools:then-return >
 					<munit-tools:error typeId="APP:ENROLMENT_FAILURE" />
@@ -137,6 +170,79 @@
 			<flow-ref doc:name="post:\enroll" doc:id="67781e7b-bd96-45c1-a6e5-b8103dd9a0de" name="post:\enroll:application\json:api-config" />
 		</munit:execution>
 	</munit:test>
+	<munit:test name="post:\library_registration" doc:id="fb568e59-5847-439a-bfce-4506411d2723" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="13938d05-c46b-42c0-b88f-088bfdffd9fd" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0d766a18-b8d7-4c51-8289-8576f9255f20" >
+				<munit:variables >
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/libraryRegistrationPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\library_registration" doc:id="cc658c94-749e-4fac-bdc7-b122b946b325" name="post:\library_registration:application\json:api-config"/>
+		</munit:execution>
+	</munit:test>
 
+<munit:test name="post:\library_registrationError" doc:id="3a71d3d3-15ce-4909-a582-07b0707d461c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7a4dfae1-123f-4d75-8a40-07015f793a55" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="929c95ae-2929-4a8c-b5b7-d84d24562452" >
+			</munit:set-event>
+			<flow-ref doc:name="post:\library_registration" doc:id="7bb07c13-6566-4ee4-a685-0e3c2b09441e" name="post:\library_registration:application\json:api-config"/>
+		</munit:execution>
+	</munit:test>
+	<munit:test name="post:\payment" doc:id="e13cf81c-7940-4d5a-8187-ee438c4a38e6" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7f90fc29-478b-49af-a9b0-126b9b7b4abd" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="9212a725-d107-4c68-a3b7-b4e0ced1e593" >
+				<munit:variables >
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/paymentPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\payment" doc:id="ef40469d-4a9d-4c66-a6e0-6a43d8544fa3" name="post:\payment:application\json:api-config"/>
+		</munit:execution>
+	</munit:test>
+
+
+<munit:test name="post:\paymentError" doc:id="8e7e8a84-f829-47a0-8803-c108f191eb72" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b0408de0-6b15-466b-a879-a93328c2e329" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="AIO Requester" attributeName="doc:name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="68c22a7f-f47a-425c-93d3-fa1a2d59573b" >
+				<munit:variables >
+					<munit:variable key="vPayload" value="#[MunitTools::getResourceAsString('munit_test_resources/paymentPayload.json')]" encoding="UTF-8" mediaType="application/json" />
+				</munit:variables>
+			</munit:set-event>
+			<flow-ref doc:name="post:\payment" doc:id="74c0a087-9df2-4d8c-9d59-4d1e10acc79f" name="post:\payment:application\json:api-config"/>
+		</munit:execution>
+	</munit:test>
 
 </mule>

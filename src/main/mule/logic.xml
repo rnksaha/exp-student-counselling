@@ -66,7 +66,7 @@ payload]]></ee:set-payload>
 	</sub-flow>
 	<sub-flow name="pingSub_Flow" doc:id="cb666447-4023-4dd1-bb00-d56860aa6e95" >
 		<try doc:name="Try" doc:id="a12c988d-8a43-4bfa-9a8f-7b7f1ca7f6e8" >
-			<http:request method="GET" doc:name="Request" doc:id="a9077417-b044-4823-acea-42a05311cb6b" config-ref="HTTP_Request_configuration" path="/ping" target="vPing" >
+			<http:request method="GET" doc:name="ping-request" doc:id="a9077417-b044-4823-acea-42a05311cb6b" config-ref="HTTP_Request_configuration" path="/ping" target="vPing" >
 				<http:headers ><![CDATA[#[{
 	"correlationId": vars.vCorrelationId,
 	"client_id": Mule::p('secure::property.client_id'),
@@ -75,7 +75,7 @@ payload]]></ee:set-payload>
 }]]]></http:headers>
 			</http:request>
 			<error-handler >
-				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fc6444c9-451e-41d3-8dd8-35273fc0927a" >
+				<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fc6444c9-451e-41d3-8dd8-35273fc0927a" type="ANY">
 					<set-payload value="PING IS NOT WORKING" doc:name="Set Payload" doc:id="c2fef20b-3181-49ce-a8bd-02457a025cc7" />
 				</on-error-continue>
 			</error-handler>

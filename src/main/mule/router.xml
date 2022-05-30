@@ -31,7 +31,7 @@ if ( ! isEmpty(attributes.headers."correlationId") ) attributes.headers."correla
     <flow name="post:\enroll:application\json:api-config">
         <flow-ref doc:name="eCounselling_LogicSub_Flow" doc:id="827212ab-8653-42ef-add4-837497acea5b" name="eCounselling_LogicSub_Flow" />
     </flow>
-    <flow name="get:\ping:api-config">
+    <flow name="get:\ping:api-config" doc:id="163ce638-6ef8-4343-9a36-097dddc9e51b">
         <flow-ref doc:name="Flow Reference" doc:id="efbfac31-1063-474b-bdfc-0fe0a2d36eaf" name="healthCheckSub_Flow" />
     </flow>
     <flow name="post:\library_registration:application\json:api-config">
