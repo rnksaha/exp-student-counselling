@@ -2,10 +2,12 @@
 title: XAPI Student Counselling
 
 uses:
-  commons: /exchange_modules/26105a91-12e5-4470-b3a0-40b228e3e2a0/sc_commonslib/0.0.11/sc_commonslib.raml
+  commons: /exchange_modules/60030395-911e-46f2-bf10-783af28a5866/sc_commonslib/1.0.2/sc_commonslib.raml
 
 types:
   student_request: commons.student_request
+  library_type: commons.library_type
+  admission_type: commons.admission_type
   
 /enroll:
   is:
@@ -51,6 +53,7 @@ types:
     description: Admission Proccess
     body:
       application/json:
+        type: admission_type
         example: !include /examples/AdmissionRequest.json
 
     responses:
@@ -88,6 +91,7 @@ types:
     description: Library Registration Proccess
     body:
       application/json:
+        type: library_type
         example: !include /examples/LibRegistrationRequest.json
 
     responses:
