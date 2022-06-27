@@ -23,5 +23,5 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
 	<configuration doc:name="Configuration" doc:id="6825a85a-72eb-4b30-8ee7-eec5c5549b37" defaultErrorHandler-ref="globalError_Handler" />
 	<configuration-properties doc:name="Configuration properties" doc:id="de809d02-8920-4431-b6bc-845bad1f9d5e" file="configuration\config.yaml" />
 	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="04542292-fab2-4358-8b2c-0dc826788b52" file="configuration/config_secure.yaml" key="${secure.key}" />
-	<api-gateway:autodiscovery apiId="17875512" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="01df1a82-a8be-49ef-889a-15dec897925c" flowRef="api-main" />
+	<api-gateway:autodiscovery apiId="17931347" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="01df1a82-a8be-49ef-889a-15dec897925c" flowRef="api-main" />
 </mule>
